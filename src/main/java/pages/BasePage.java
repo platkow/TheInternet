@@ -8,7 +8,6 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.interactions.Coordinates;
 import org.openqa.selenium.interactions.Locatable;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.events.internal.EventFiringMouse;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
@@ -21,8 +20,6 @@ import java.util.NoSuchElementException;
 public class BasePage {
     private static Logger logger = LoggerFactory.getLogger(BasePage.class);
     private WebDriver driver;
-    private EventFiringMouse eventFiringMouse;
-    protected WebListener listener;
 
     public BasePage(WebDriver driver) {
         this.driver = driver;
@@ -105,10 +102,8 @@ public class BasePage {
 
     public void mouseHover(WebElement element) {
         String elementText = element.getText();
-        eventFiringMouse = new EventFiringMouse(driver, listener);
-        Locatable item = (Locatable) element;
-        Coordinates coordinates = item.getCoordinates();
-        eventFiringMouse.mouseMove(coordinates);
+        Actions actions = new Actions(driver);
+        actions.moveToElement(element).perform();
         logger.info("######## mouseHover perform on the object: " + elementText);
     }
 
