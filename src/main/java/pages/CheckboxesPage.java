@@ -4,7 +4,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-public class CheckboxesPage extends BasePage{
+public class CheckboxesPage extends BasePage {
     public CheckboxesPage(WebDriver driver) {
         super(driver);
     }
@@ -16,29 +16,21 @@ public class CheckboxesPage extends BasePage{
     private WebElement secondCheckbox;
 
 
+    public boolean checkFirstCheckbox() {
+        boolean isChecked = isChecked(firstCheckbox);
 
-    public boolean checkFirstCheckbox(){
-       boolean isChecked = false;
-       try{
-           String attributeValue = firstCheckbox.getAttribute("checked");
-           if(attributeValue == null){
-               isChecked = true;
-           }
-       } catch (Exception e){
-           e.printStackTrace();
-       }
-
-       if(!isChecked){
-           click(firstCheckbox);
-       }
-
-        try{
-            String attributeValue = firstCheckbox.getAttribute("checked");
-            if(attributeValue == null){
-                isChecked = true;
-            }
-        } catch (Exception e){
-            e.printStackTrace();
+        if (!isChecked) {
+            click(firstCheckbox);
         }
+        return isChecked(firstCheckbox);
+    }
+
+    public boolean uncheckSecondCheckbox() {
+        boolean isChecked = isChecked(secondCheckbox);
+
+        if (isChecked) {
+            click(secondCheckbox);
+        }
+        return isChecked(secondCheckbox);
     }
 }

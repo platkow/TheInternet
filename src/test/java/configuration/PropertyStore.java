@@ -10,7 +10,7 @@ import java.util.Properties;
 public enum PropertyStore {
     ENVIRONMENT("environment"),
     BROWSER("browser"),
-    BROWSER_WEBELEMENT_TIMEOUT("browser.webelement.timout"),
+    BROWSER_WEBELEMENT_TIMEOUT("browser.webelement.timeout"),
     BROWSER_IMPLICIT_TIMEOUT("browser.implicit.timeout"),
     BROWSER_ATTACH_SCREENSHOT("browser.attachscreenshot"),
     BROWSER_HEADLESS("browser.headless");

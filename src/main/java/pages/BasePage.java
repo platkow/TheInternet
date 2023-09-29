@@ -1,8 +1,10 @@
 package pages;
 
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.interactions.Coordinates;
 import org.openqa.selenium.interactions.Locatable;
 import org.openqa.selenium.support.PageFactory;
@@ -10,7 +12,6 @@ import org.openqa.selenium.support.events.internal.EventFiringMouse;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,48 +34,91 @@ public class BasePage {
     }
 
     public void click(WebElement element) {
-        waitForElementToBeClickable(getDriver(), element).click();
+        String elementText = element.getText();
+        waitForElementToBeClickable(driver, element).click();
+        logger.info("######## Click on element: " + elementText);
+    }
+
+    public void doubleClick(WebElement element) {
+        String elementText = element.getText();
+        waitForElementToBeClickable(driver, element);
+        Actions action = new Actions(driver);
+        action.doubleClick(element).build().perform();
+        logger.info("######## Double click on element: " + elementText);
+    }
+
+    public void rightClick(WebElement element) {
+        String elementText = element.getText();
+        waitForElementToBeClickable(driver, element);
+        Actions action = new Actions(driver);
+        action.contextClick(element).build().perform();
+        logger.info("######## Right click on element: " + elementText);
     }
 
     public void sendKeys(WebElement element, String text) {
-        logger.info("######## Sending text: " + text + " to element: " + element.getTagName());
+        String elementTag = element.getTagName();
         waitForElementToBeVisible(getDriver(), element).sendKeys(text);
+        logger.info("######## Sending text: " + text + " to element: " + elementTag);
     }
 
-    public boolean isChecked(WebElement element){
+    public void sendKeys(WebElement element, Keys keys) {
+        String elementTag = element.getTagName();
+        waitForElementToBeVisible(getDriver(), element).sendKeys(keys);
+        logger.info("######## Sending : " + keys.name() + " to element: " + elementTag);
+    }
+
+    public boolean isChecked(WebElement element) {
+        logger.info("######## Checking if checkbox is checked");
         boolean isChecked = false;
-        try{
+        try {
             String attributeValue = element.getAttribute("checked");
-            if(attributeValue == null){
+            if (attributeValue.equals("true")) {
                 isChecked = true;
             }
-        } catch (Exception e){
+
+            if (attributeValue == null) {
+                isChecked = false;
+            }
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
+        logger.info("######## Checkbox is checked: " + isChecked);
         return isChecked;
     }
 
     public void selectCbx(WebElement element) {
-        logger.info("######## Mark checkbox: " + element.getTagName() + " " + element.getText());
+        logger.info("######## Selecting checkbox: " + element.getTagName() + " " + element.getText());
         if (!element.isSelected()) {
             element.click();
+            boolean isSelected = element.isSelected();
+            logger.info("######## Checkbox selected: " + isSelected);
         }
     }
 
+    public String getText(WebElement element) {
+        logger.info("######## Getting text from element: " + element.getTagName());
+        String text = element.getText();
+        logger.info("######## Text is: " + text);
+        return text;
+    }
+
     public void mouseHover(WebElement element) {
-        logger.info("######## mouseHover perform on the object: " + element.getText());
+        String elementText = element.getText();
         eventFiringMouse = new EventFiringMouse(driver, listener);
         Locatable item = (Locatable) element;
         Coordinates coordinates = item.getCoordinates();
         eventFiringMouse.mouseMove(coordinates);
+        logger.info("######## mouseHover perform on the object: " + elementText);
     }
 
     public WebElement waitForElementToBeVisible(WebDriver driver, WebElement element) {
+        logger.info(">>>>>>>>>>>>>>>>>> Waiting for element to be visible: " + element.getText());
         Wait<WebDriver> wait;
         WebElement visibleElement;
         try {
             wait = new FluentWait<>(driver)
-                    .withTimeout(Duration.ofSeconds(Integer.parseInt(System.getProperty("fluent.webelement.timout"))))
+                    .withTimeout(Duration.ofSeconds(Integer.parseInt(System.getProperty("fluent.webelement.timeout"))))
                     .pollingEvery(Duration.ofSeconds(Integer.parseInt(System.getProperty("pooling.every"))))
                     .ignoring(NoSuchElementException.class)
                     .ignoring(TimeoutException.class);
@@ -88,12 +132,33 @@ public class BasePage {
         }
     }
 
+    public boolean waitForInvisibilityOfElement(WebDriver driver, WebElement element) {
+        logger.info(">>>>>>>>>>>>>>>>>> Waiting for invisibility of element: " + element.getTagName());
+        Wait<WebDriver> wait;
+        Boolean isElementVisible;
+        try {
+            wait = new FluentWait<>(driver)
+                    .withTimeout(Duration.ofSeconds(Integer.parseInt(System.getProperty("fluent.webelement.timeout"))))
+                    .pollingEvery(Duration.ofSeconds(Integer.parseInt(System.getProperty("pooling.every"))))
+                    .ignoring(NoSuchElementException.class)
+                    .ignoring(TimeoutException.class);
+            logger.info("######### Checking if element " + element.getTagName() + " " + element.getText() + " is invisible.");
+            isElementVisible = wait.until(ExpectedConditions.invisibilityOf(element));
+            return isElementVisible;
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.info("######### Element is still visible.");
+            return false;
+        }
+    }
+
     public WebElement waitForElementToBeClickable(WebDriver driver, WebElement element) {
+        logger.info(">>>>>>>>>>>>>>>>>> Waiting for element to be clickable: " + element.getText());
         Wait<WebDriver> wait;
         WebElement clickableElement;
         try {
             wait = new FluentWait<>(driver)
-                    .withTimeout(Duration.ofSeconds(Integer.parseInt(System.getProperty("fluent.webelement.timout"))))
+                    .withTimeout(Duration.ofSeconds(Integer.parseInt(System.getProperty("fluent.webelement.timeout"))))
                     .pollingEvery(Duration.ofSeconds(Integer.parseInt(System.getProperty("pooling.every"))))
                     .ignoring(NoSuchElementException.class)
                     .ignoring(TimeoutException.class);
@@ -107,13 +172,20 @@ public class BasePage {
         }
     }
 
-    public void waitForLoadedPage(WebElement element) {
+    public void waitForTextToBePresentInElement(WebDriver driver, WebElement element, String text) {
+        logger.info(">>>>>>>>>>>>>>>>>> Waiting for text: " + text + " to be present in element: " + element.getTagName());
+        Wait<WebDriver> wait;
+        boolean isTextPresent;
         try {
-            WebDriverWait wait = new WebDriverWait(driver, Long.parseLong(System.getProperty("explicit.webelement.timout")));
-            wait.until(ExpectedConditions.visibilityOf(element));
-            logger.info("Explicit wait for element: " + element.getText() + " " + element.getTagName() + " works.");
+            wait = new FluentWait<>(driver)
+                    .withTimeout(Duration.ofSeconds(Integer.parseInt(System.getProperty("fluent.webelement.timeout"))))
+                    .pollingEvery(Duration.ofSeconds(Integer.parseInt(System.getProperty("pooling.every"))))
+                    .ignoring(TimeoutException.class);
+            isTextPresent = wait.until(ExpectedConditions.textToBePresentInElement(element, text));
+            logger.info(">>>>>>>>>>>>>>>>>> Is text present in element: " + isTextPresent);
         } catch (Exception e) {
-            logger.info("Explicit wait for element dose not work");
+            logger.info("Wait for text to be present in element does not work");
         }
     }
 }
+

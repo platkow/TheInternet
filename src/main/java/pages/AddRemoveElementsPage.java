@@ -16,25 +16,25 @@ public class AddRemoveElementsPage extends BasePage {
     @FindBy(xpath = "//button[contains(text(),'Add')]")
     private WebElement addElementBtn;
 
-    @FindBy(css = "#elements")
+    @FindBy(xpath = "//div[@id='elements']//button ")
     private List<WebElement> elementsPresent;
 
     RandomIntGenerator rnd = new RandomIntGenerator();
 
     public int addRandomCountOfElements(int bound) {
-        int expectedClicksToBePerformed = rnd.generateRandomIndex(bound);
-        for (int i = 0; i < expectedClicksToBePerformed; i++) {
+        int expectedElementsToBeAddedCount = rnd.generateRandomIndex(bound);
+        for (int i = 0; i < expectedElementsToBeAddedCount; i++) {
             click(addElementBtn);
         }
-        return expectedClicksToBePerformed;
+        return expectedElementsToBeAddedCount;
     }
 
     public int addSixElements() {
-        int expectedClicksToBePerformed = 6;
-        for (int i = 0; i < expectedClicksToBePerformed; i++) {
+        int expectedElementsToBeAddedCount = 6;
+        for (int i = 0; i <= expectedElementsToBeAddedCount; i++) {
             click(addElementBtn);
         }
-        return expectedClicksToBePerformed;
+        return expectedElementsToBeAddedCount;
     }
 
     public int countElements(){
