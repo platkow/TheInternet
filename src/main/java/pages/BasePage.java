@@ -31,17 +31,17 @@ public class BasePage {
     }
 
     public void click(WebElement element) {
-        String elementText = element.getText();
+        String elementTag = element.getTagName();
         waitForElementToBeClickable(driver, element).click();
-        logger.info("######## Click on element: " + elementText);
+        logger.info("######## Click on element: " + elementTag);
     }
 
     public void doubleClick(WebElement element) {
-        String elementText = element.getText();
+        String elementTag = element.getTagName();
         waitForElementToBeClickable(driver, element);
         Actions action = new Actions(driver);
         action.doubleClick(element).build().perform();
-        logger.info("######## Double click on element: " + elementText);
+        logger.info("######## Double click on element: " + elementTag);
     }
 
     public void rightClick(WebElement element) {
@@ -69,12 +69,10 @@ public class BasePage {
         boolean isChecked = false;
         try {
             String attributeValue = element.getAttribute("checked");
-            if (attributeValue.equals("true")) {
-                isChecked = true;
-            }
-
             if (attributeValue == null) {
                 isChecked = false;
+            } else if (attributeValue.equals("true")) {
+                isChecked = true;
             }
 
         } catch (Exception e) {
@@ -94,6 +92,7 @@ public class BasePage {
     }
 
     public String getText(WebElement element) {
+        waitForElementToBeVisible(getDriver(), element);
         logger.info("######## Getting text from element: " + element.getTagName());
         String text = element.getText();
         logger.info("######## Text is: " + text);
